@@ -10,10 +10,10 @@
 
 class Renderer {
    public:
-    void clear () { std::cout << "\x1b[H"; }
+    void clear () { std::cout << "\x1b[H\x1b[J"; }
 
     void displayASCII ( const unsigned char* pixels, int width, int height, int linesize ) {
-        const char symbols[] = " .:-=+*%@#";  // Light to dark
+        const char symbols[] = "  ..::--==++**%%@@##";  // Light to dark
         const int numSymbols = sizeof ( symbols ) - 1;
 
         std::string picture;
