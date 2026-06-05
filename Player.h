@@ -87,12 +87,6 @@ class Player {
         double fps = av_q2d ( formatContext->streams[ videoStreamIndex ]->avg_frame_rate );
         int delay = static_cast<int> ( 1000.0 / fps );
 
-        std::cout << "Terminal: " << termWidth << "x" << termHeight << '\n';
-        std::cout << "Scaled to: " << scaledFrame->width << "x" << scaledFrame->height << '\n';
-        std::cin.get ();  // pause to read it
-
-        system ( "pause" );
-
         while ( av_read_frame ( formatContext, packet ) >= 0 ) {
             if ( packet->stream_index == videoStreamIndex ) {
                 avcodec_send_packet ( codecContext, packet );
@@ -106,6 +100,8 @@ class Player {
                 }
             }
         }
+        av_packet_free ( &packet );
+        av_frame_free ( &frame );
     }
 
     Player ()
@@ -115,5 +111,12 @@ class Player {
           scaledFrame ( nullptr ),
           videoStreamIndex ( -1 ) {
         renderer.getTerminalSize ( termWidth, termHeight );
+    }
+
+    ~Player () {
+        if ( formatContext ) avformat_close_input ( &formatContext );
+        if ( codecContext ) avcodec_free_context ( &codecContext );
+        if ( swsContext ) sws_freeContext ( swsContext );
+        if ( scaledFrame ) av_frame_free ( &scaledFrame );
     }
 };
